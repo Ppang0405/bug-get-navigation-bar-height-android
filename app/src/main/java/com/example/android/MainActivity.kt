@@ -15,6 +15,8 @@ import androidx.appcompat.app.AppCompatActivity
 
 
 class MainActivity : AppCompatActivity() {
+    private var cached = false
+    private var hasImmersive = false
 
     // bug of https://stackoverflow.com/questions/46126521/android-navigation-bar-height-react-native
     // after that, has bug of https://www.npmjs.com/package/react-native-extra-dimensions-android
@@ -197,6 +199,10 @@ class MainActivity : AppCompatActivity() {
         val hasNavBar2 = hasNavBar2()
         has_nav_bar_2.text = "has_nav_bar_2: $hasNavBar2"
 
+        val has_Immersive = findViewById<TextView>(R.id.hasImmersive)
+        val hasImmersive = hasImmersive()
+        has_Immersive.text ="has_Immersive: $hasImmersive"
+
     }
 
     private fun convertToRealPoint(value: Int): Float {
@@ -253,5 +259,29 @@ class MainActivity : AppCompatActivity() {
     fun hasNavBar(resources: Resources): Boolean {
         val id: Int = resources.getIdentifier("config_showNavigationBar", "bool", "android")
         return !(id > 0 && resources.getBoolean(id))
+    }
+
+    // https://github.com/lequanghuylc/react-native-detect-navbar-android
+    // it still not work
+    private fun hasImmersive(): Boolean {
+        if (!cached) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+                hasImmersive = false
+                cached = true
+                return false
+            }
+            val d = (getSystemService(WINDOW_SERVICE) as WindowManager).defaultDisplay
+            val realDisplayMetrics = DisplayMetrics()
+            d.getRealMetrics(realDisplayMetrics)
+            val realHeight = realDisplayMetrics.heightPixels
+            val realWidth = realDisplayMetrics.widthPixels
+            val displayMetrics = DisplayMetrics()
+            d.getMetrics(displayMetrics)
+            val displayHeight = displayMetrics.heightPixels
+            val displayWidth = displayMetrics.widthPixels
+            hasImmersive = realWidth > displayWidth || realHeight > displayHeight
+            cached = true
+        }
+        return hasImmersive
     }
 }
