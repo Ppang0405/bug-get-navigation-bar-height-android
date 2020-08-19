@@ -16,6 +16,12 @@ import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
 
+    // bug of https://stackoverflow.com/questions/46126521/android-navigation-bar-height-react-native
+    // after that, has bug of https://www.npmjs.com/package/react-native-extra-dimensions-android
+
+    // ticket bug: https://wrethink.atlassian.net/browse/AIMW-1833
+
+    // so I check android native to find problem, but can not see consistency method to detect navigation show or hide, and get height of it, different devices return different result in each method, so confusing
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -83,6 +89,7 @@ class MainActivity : AppCompatActivity() {
         return checkNavigationGestureEnabled != 0
     }
 
+    // https://www.jianshu.com/p/b20047fdea8a
     fun getDeviceInfo(): String {
         val brand = Build.BRAND
         if (TextUtils.isEmpty(brand)) return "navigation_is_min"
@@ -247,5 +254,4 @@ class MainActivity : AppCompatActivity() {
         val id: Int = resources.getIdentifier("config_showNavigationBar", "bool", "android")
         return !(id > 0 && resources.getBoolean(id))
     }
-
 }
